@@ -25,7 +25,7 @@ compile: remove_build_directories convert_pickle documentation
 run_all: run_debug run_small run_normal
 
 run_debug: compile
-	for NP in 2 4 6 8 ; do \
+	for NP in 2 4 ; do \
 		mkdir -p results/data_debug-$$NP ; \
 		cd build/ && mpirun -np $$NP -hostfile ../hostfile ./MPI_Project.exe "../data/data_debug" "../results/data_debug-$$NP" 10 ; \
 		cd .. ; \
@@ -35,7 +35,7 @@ run_debug: compile
 	python3 results/benchmark_np.py "results/"
 
 run_small: compile
-	for NP in 2 4 6 8 ; do \
+	for NP in 2 4 ; do \
 		mkdir -p results/data_small-$$NP ; \
 		cd build/ && mpirun -np $$NP -hostfile ../hostfile ./MPI_Project.exe "../data/data_small" "../results/data_small-$$NP" 1 ; \
 		cd .. ; \
@@ -45,7 +45,7 @@ run_small: compile
 	python3 results/benchmark_np.py "results/"
 
 run_normal: compile
-	for NP in 2 4 6 8 ; do \
+	for NP in 2 4 ; do \
 		mkdir -p results/data_normal-$$NP ; \
 		cd build/ && mpirun -np $$NP -hostfile ../hostfile ./MPI_Project.exe "../data/data_normal" "../results/data_normal-$$NP" 1	 ; \
 		cd .. ; \
