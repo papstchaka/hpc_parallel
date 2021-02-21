@@ -38,6 +38,18 @@ processes the benchmark comparison for all implementations graphically
 
 -------
 
+## <a href="benchmark_np_speedup.png" target="_blank">`benchmark_np_speedup.png`</a>
+
+speedup comparison for the different datasets with variable number used processors
+
+<h2 align="center">
+  <img src="benchmark_np_speedup.png" alt="Benchmark Vergleich" width="400px" />
+</h2>
+
+<br/><br/>
+
+-------
+
 ## <a href="benchmark_np.png" target="_blank">`benchmark_np.png`</a>
 
 benchmark comparison between number of used processors
