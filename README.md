@@ -1,51 +1,48 @@
-# High Performance Computing für Maschinelle Intelligenz (C++ / Python)
-### Lehrstuhl für Datenverarbeitung | Wintersemester 2020 / 2021 | Gruppe 1
+# High Performance Computing using <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> in C++ for Asynchronous Value Iteration
+
+## Content
+
+- [`About the project`](#about-the-project)
+- [`Repository structure`](#repository-structure)
+- [`Communication protocols`](#communication-protocols)
+- [`Adding communication protocols`](#adding-communication-protocols)
+- [`Data import`](#data-import)
+- [`Evaluation of implementations`](#evaluation-of-implementations)
+- [`Run the project`](#run-the-project)
+- [`Benchmark comparison`](#benchmark-comparison---8-processors)
+- [`Variance of running time`](#variance-of-running-time)
+- [`Install OpenMPI`](#install-openmpi)
+- [`Group members`](#group-members)
 
 ---
 
-## Inhaltsverzeichnis
+## About the project
 
-- [`Allgemeines zu diesem Projekt`](#allgemeines-zu-diesem-projekt)
-- [`Repository-Struktur`](#repository-struktur)
-- [`Kommmunikationsprotokolle`](#kommmunikationsprotokolle)
-- [`Erweitern des Projekts mit Protokollen`](#erweitern-des-projekts-mit-protokollen)
-- [`Datenimport`](#datenimport)
-- [`Evaluation verschiedener Implementierungen`](#evaluation-verschiedener-implementierungen)
-- [`Programm ausführen`](#programm-ausführen)
-- [`Benchmark Vergleich`](#benchmark-vergleich)
-- [`OpenMPI installieren`](#openmpi-installieren)
-- [`Gruppen Mitglieder`](#gruppen-mitglieder) 
-- [`Anhang`](#anhang)
+In this repository a `Asynchronous Value Iteration` is implemented using  <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> for parallelization and performance boost. Therefor different strategies of communication are implemented and afterwards evaluated and compared to eachother.
 
 ---
 
-## Allgemeines zu diesem Projekt
+## Repository structure
 
-In diesem Projekt wird eine asynchrone Value Iteration unter Zuhilfenahme von <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> vorgestellt. Dabei werden verschiedene Strategien implementiert und anschließend einem Benchmark Vergleich unterzogen.
-
----
-
-## Repository-Struktur
-
-- <a href="data/" target="_blank">`data/`</a> - enthält Datensätze
-- <a href="install_files/" target="_blank">`install_files/`</a> - enthält alle benötigten Debian-Dateien zum Installieren von <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> [Version 2.2.1]
-- <a href="lib/" target="_blank">`lib/`</a> - enthält alle benötigten Lirbraries
-- <a href="results/" target="_blank">`results/`</a> - enthält die Resultate der Implementierungen
-- <a href="src/" target="_blank">`src/`</a> - enthält den C++ Quellcode
-- <a href="CMakeLists.txt" target="_blank">`CMakeLists.txt`</a> - verantwortlich für Erstellen der `Makefile` zum Kompilieren
-- <a href="Doxyfile" target="_blank">`Doxyfile`</a> - verantwortlich für die automatische Generierung der Code-Dokumentation
-- <a href="Makefile" target="_blank">`Makefile`</a> - verantwortlich für alle Interaktion mit dem Projekt
-- <a href="Project_Presentation.pdf" target="_blank">`Project_Presentation`</a> - grafische Aufbereitung der erzielten Ergebnisse
-- <a href="hostfile" target="_blank">`hostfile`</a> - enthält alle Hosts auf denen das verteilte Rechnen laufen soll
-- <a href="main.cpp" target="_blank">`main.cpp`</a> - Hauptprogramm, ruft Implementationen in <a href="src/" target="_blank">`src/`</a> auf und führt den Task aus
+- <a href="data/" target="_blank">`data/`</a> - contains datasets
+- <a href="install_files/" target="_blank">`install_files/`</a> - contains all needed debian pacakges to install <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> `[Version 2.2.1]`
+- <a href="lib/" target="_blank">`lib/`</a> - contains all required libraries
+- <a href="results/" target="_blank">`results/`</a> - contains the results of the implementations
+- <a href="src/" target="_blank">`src/`</a> - contains the C++ source code
+- <a href="CMakeLists.txt" target="_blank">`CMakeLists.txt`</a> - responsible for creating the correct `Makefile` for code compiling
+- <a href="Doxyfile" target="_blank">`Doxyfile`</a> - responsible for automatically creating the code documentation
+- <a href="Makefile" target="_blank">`Makefile`</a> - responsible for all interactions with the project
+- <a href="Project_Presentation.pdf" target="_blank">`Project_Presentation`</a> - contains results of the project for presentation purposes
+- <a href="hostfile" target="_blank">`hostfile`</a> - contains all hosts on which parallel computing shall be runned
+- <a href="main.cpp" target="_blank">`main.cpp`</a> - Main script, runs all implementations in <a href="src/" target="_blank">`src/`</a>, runs the task
 
 ---
 
-## Kommmunikationsprotokolle:
+## Communication protocols:
 
-Aus Simplifikationsgründen - vor allem da die einzelnen Namen der Implementierungen sehr lange und unübersichtlich werden - sind die einzelnen Kommunikationsprotokolle nummeriert. Im Folgenden kann nachgelesen werden, welche Nummer welcher <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a>-Funktionalität entspricht.
+For simplification reasons - especially because the names of the implementations would get very long otherwise and confusing - the individual implementations are named numerically instead of the actual communication schemes. The following table shows which number is corresponding to which <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> functionality.
 
-| Name                                                                                           | OpenMPI Funktionen                    |
+| name                                                                                           | OpenMPI functionality                    |
 | ---------------------------------------------------------------------------------------------- | ------------------------------------- |
 | <a href="src/vi_processor_impl_distr_01.cpp" target="_blank">`VI_Processor_Impl_Distr_01`</a>  | `Allgatherv`, `Allreduce`, `Gatherv`  |
 | <a href="src/vi_processor_impl_distr_02.cpp" target="_blank">`VI_Processor_Impl_Distr_02`</a>  | `Send`, `Recv`, `Bcast`               |
@@ -53,119 +50,126 @@ Aus Simplifikationsgründen - vor allem da die einzelnen Namen der Implementieru
 | <a href="src/vi_processor_impl_distr_04.cpp" target="_blank">`VI_Processor_Impl_Distr_04`</a>  | `Isend`, `Irecv`, `Ibcast`, `Igatherv`|
 | <a href="src/vi_processor_impl_distr_05.cpp" target="_blank">`VI_Processor_Impl_Distr_05`</a>  | `Igatherv`, `Bcast`, `Gatherv`        |
 
-Umfangreiche Dokumenation zu möglichen <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> Kommunicationsprotokollen und deren Funktionen: [`Princeton Bootcamp Kommunikationsprotokolle`](https://princetonuniversity.github.io/PUbootcamp/sessions/parallel-programming/Intro_PP_bootcamp_2018.pdf) bzw. <a href="https://www.open-mpi.org/doc/v2.1/" target="_blank">`offizielle Dokumentation der genutzten OpenMPI Version [2.1.1]`</a>. Für Vergleichszwecke wurde <a href="src/vi_processor_impl_local.cpp" target="_blank">`VI_Processor_Impl_Local`</a> implementiert, welche die Implementation der synchronen `Value Iteration` aus Hausaufgabe 2 ist
+An extensive documentation for possible <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> communication protocols and their functionality: [`Princeton Bootcamp communication protocols`](https://princetonuniversity.github.io/PUbootcamp/sessions/parallel-programming/Intro_PP_bootcamp_2018.pdf) respectively <a href="https://www.open-mpi.org/doc/v2.1/" target="_blank">`official documentation of the used OpenMPI Version [2.1.1]`</a>. For comparison reasons <a href="src/vi_processor_impl_local.cpp" target="_blank">`VI_Processor_Impl_Local`</a> was implemented which is the implementation of the synchronous `Value Iteration`.
 
-Nähere Informationen über die einzelnen Implementierungen können in <a href="src/" target="_blank">`src/`</a> bzw. den einzelnen Skripts selbst nachgelesen werden
-
----
-
-## Erweitern des Projekts mit Protokollen
-
-Wir können hier verschiedene VI Implementierungen und Kommunikationsstrategien ausprobieren indem einfach eine von <a href="src/vi_processor_base.h" target="_blank">` VI_Processor_Base`</a> abgeleitete Klasse implementiert wird (siehe als Beispiel <a href="src/vi_processor_impl_local.cpp" target="_blank">`VI_Processor_Impl_Local`</a> oder <a href="src/vi_processor_impl_distr_01.cpp" target="_blank">`VI_Processor_Impl_Distr_01`</a>). 
-
-
+Further information about the individual implementation can be gleaned in <a href="src/" target="_blank">`src/`</a> respectively the scripts themselves.
 
 ---
 
-## Datenimport
+## Adding communication protocols
 
-Die Daten werden durch die <a href="Makefile" target="_blank">`Makefile`</a> während des Kompilierens mittels <a href="data/convert_pickle.py" target="_blank">`convert_pickle.py`</a> aus dem `.pickle`-Format in ein `.npz`-Format umgewandelt, welches durch die Bibliothek <a href="https://github.com/rogersce/cnpy" target="_blank">`"cnpy" by Carl Rogers`</a> eingelesen werden.
+We can add and evaluate different `VI implementations` and communication strategies by implementing a from <a href="src/vi_processor_base.h" target="_blank">` VI_Processor_Base`</a> derived class (see example <a href="src/vi_processor_impl_local.cpp" target="_blank">`VI_Processor_Impl_Local`</a> respectively <a href="src/vi_processor_impl_distr_01.cpp" target="_blank">`VI_Processor_Impl_Distr_01`</a>). 
 
----
 
-## Evaluation verschiedener Implementierungen
-
-Wenn mehrere Implementierungen verglichen werden sollen wird in der <a href="main.cpp" target="_blank">`main.cpp`</a> eine Liste erstellt welche mehrere konkrete Implementierungen enthält. Dann Messen wir iterativ für jede Implementierung die Berechnungszeit (jeweils ~20 mal) und vergleichen die mittlere Ausführungsdauer und eventuell auch deren Standardabweichung.
 
 ---
 
-## Programm ausführen
+## Data import
 
-1. Melde dich über ssh auf einem HPC Rechner (Bsp: `hpc05`) an
-2. Wechsele in das `LRZ-Home` Verzeichnis
-3. Klone das Repository
+The dataset is converted from `.pickle`-format into `.npz`-format while compiling by the <a href="Makefile" target="_blank">`Makefile`</a> using <a href="data/convert_pickle.py" target="_blank">`convert_pickle.py`</a>. Those are afterwards read-in by <a href="https://github.com/rogersce/cnpy" target="_blank">`"cnpy" by Carl Rogers`</a> library.
+
+---
+
+## Evaluation of implementations
+
+When a comparison of multiple implementations is desired, <a href="main.cpp" target="_blank">`main.cpp`</a> builds up a list containing multiple implementations. Afterwards the calculation time is iteratively measured (each ~20 times). The the mean calculation time is used to compare the implementations.
+
+---
+
+## Run the project
+
+1. Clone the repository
 
 ```text
-# Auf HPC Rechner anmelden
-ssh hpc05
+# clone repository
+git clone https://github.com/papstchaka/hpc_parallel.git
 
-# In das LRZ-Home Verzeichnis wechseln
-cd lrz-nashome
-
-# Repository klonen
-git clone https://gitlab.ldv.ei.tum.de/cpp-lk20/gruppe1.git
-
-# Bzw. neuesten Stand pullen (wenn Projekt schon vorhanden ist)
-cd gruppe1
+# respectively pull to latest version (if project already cloned)
+cd hpc_parallel
 git pull origin master
 
-# In Master Branch wechseln
+# switch to master branch
 git checkout master
 ```
 
-Dann kann das Projekt kompiliert und ausgeführt werden. Hierfür gibt es mehrere Möglichkeiten:
+-------------------------------------------------------------
+
+2. Make sure that your <a href="hostfile" target="_blank">`hostfile`</a> respectively your `~/.ssh/config` are set up correctly/accordingly. Currently <a href="hostfile" target="_blank">`hostfile`</a> only contains the local machine, using 4 slots/processors.
+
+`~/.ssh/config`:
+```text
+# Put this file in ~/.ssh/ with the name 'config'
+
+# Matches <host1> <host2> and so on, %h gets the actual match, e.g. host6, and completes the host name, where <host1>, <host2> stand for the host names of your respective cluster computers
+
+Host host1 host2 
+  HostName %h.<rest_of_address>
+
+# Configuration for all hosts (matches always)
+
+Host *
+  User <your_user_name>
+  ForwardX11 yes
+  Compression yes
+```
+
+<a href="hostfile" target="_blank">`hostfile`</a>:
+
+```text
+# All computers mpirun should use. You can use as much slots as desired (should be below physical number of processors - must be lower/equal to max-slots)
+# Comments as in Python
+# localhost slots=4 max-slots=4 --> local machine !
+<host1>.<rest_of_address> slots=2 max-slots=2
+<host2>.<rest_of_address> slots=2 max-slots=2
+```
+
+-------------------------------------------------------------
+
+3. Compile and run the project. Therefor different possibilities exist.
 
 ```text
 
-1. Lokales Ausführen auf einer pysikalischen Maschine 
-   (Anzahl der dabei gestarteten Prozesse: 2)
+1. Running the project locally on current physical machine
+   (number of started processors: 2 respectively 4)
 
 1.1 make run_debug_local
 
 -------------------------------------------------------------
 
-2. Verteiltes Rechnen auf mehreren pysikalischen Maschinen
-   (Manuelle auswahl des Datensatzes)
+2. Distributed computing on multiple physical devices
+   (manual decision of used dataset).
 
-2.1 make run_debug (Start mit dem "debug" Datensatz)
+2.1 make run_debug (start with "debug" dataset)
 
-    oder
+    or
   
-2.2 make run_small (Start mit dem "small" Datensatz)
+2.2 make run_small (start with "small" dataset)
 
-    oder
+    or
 
-2.3 make run_normal (Start mit dem "normal" Datensatz)
+2.3 make run_normal (start with "normal" dataset)
 
 -------------------------------------------------------------
 
-3. Verteiltes Rechnen auf mehreren pysikalischen Maschinen
-   (Es werden alle Datensätze sequentiell abgearbeitet)
+3. Distributed computing on multiple physical devices
+   (all datasets will be processed sequentially)
 
 3.1 make run_all
 
 -------------------------------------------------------------
 
-4. Manuelles Ausführen
+4. manual running
 
-1.1 make compile
+4.1 make compile
 
-1.2 cd build
+4.2 cd build
 
-1.3 mpirun -np 6 -hostfile ../hostfile ./MPI_Project.exe "<Pfad_zu_Daten_Ordner>" "<Pfad_zu_Results_Ordner>" <Anzahl_der_Runs>
+4.3 mpirun -np 6 -hostfile ../hostfile ./MPI_Project.exe "<path_to_data_folder>" "<path_to_results_folder>" <number_of_runs>
 
 ```
+## Benchmark comparison - 8 processors
 
-Hinweis: Überprüfe, ob die `~/.ssh/config` richtig ist:
-```text
-# Put this file in ~/.ssh/ with the name 'config'
-
-# Matches hpc01 hpc02 and so on, %h gets the actual match, e.g. hpc06, and completes the host name
-# A wildcard is possible (e.g. hpc*), but this disables the tab completion
-
-Host hpc01 hpc02 hpc03 hpc04 hpc05 hpc06 hpc07 hpc08 hpc09 hpc10 hpc11 hpc12 hpc13 hpc14 hpc15
-  HostName %h.clients.eikon.tum.de
-
-# Configuration for all hosts (matches always)
-
-Host *
-  User DeinUserName
-  ForwardX11 yes
-  Compression yes
-```
-## Benchmark Vergleich - 8 Prozessoren
-
-In unten stehenden Grafiken sind Benchmark Vergleiche über alle implementierten Kommunikationsprotokolle für die verschiedenen Datensätze zu sehen.
+In the graphics below the benchmark comparison for all implemented communication protocols is shown for the different datasets.
 
 <a href="data/data_debug-8/" target="_blank">`data_debug/`</a>
 
@@ -187,9 +191,9 @@ In unten stehenden Grafiken sind Benchmark Vergleiche über alle implementierten
 
 ---
 
-## Ausführungsabweichung
+## Variance of running time
 
-In der darunter zu sehenden Grafik wird ein Varianz Plot präsentiert, der die Abweichung der Ausführungzeiten zeigt. Dieser wurde nur für den Fall des [`data_debug`](data_debug/) Datensatzes generiert, da die beiden anderen Datensätze [`data_small`](data_small/) und [`data_normal`](data_normal/) jeweils nur einmal durchlaufen und es somit keine Varianz gibt. 
+The graphic below is a variance plot. It shows the deviation of calculation times. It was only generated for [`data_debug`](data_debug/) dataset because [`data_small`](data_small/) dataset and [`data_normal`](data_normal/) dataset only ran once each. Thereafter no variance exists. 
 
 <h2 align="center">
   <img src="results/data_debug-8/var_distr.png" alt="Varianz Vergleich" width="800px" />
@@ -197,9 +201,9 @@ In der darunter zu sehenden Grafik wird ein Varianz Plot präsentiert, der die A
 
 ---
 
-## OpenMPI installieren
+## Install OpenMPI
 
-Installer Dateien sind im Ordner <a href="install_files/" target="_blank">`install_files/`</a> abgelegt und müssen in nachfolgender Reihenfolge installiert werden (Linux Umgebung: Ubuntu, WSL2, etc.). Anschließend ist Version `2.2.1` installiert.
+Installer files for <a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> are located in <a href="install_files/" target="_blank">`install_files/`</a>. They have to be installed in the following order (Linux environment: Ubuntu, WSL2, etc.). Afterwards version `2.2.1` is installed on the respective machine.
 ```cmd
 1. cd install_files
 2. sudo dpkg -i libhwloc5_1.11.9-1_amd64.deb
@@ -209,36 +213,12 @@ Installer Dateien sind im Ordner <a href="install_files/" target="_blank">`insta
 ```
 ---
 
-## Gruppen Mitglieder
+## Group members
 
 |                             |                             |
 | --------------------------- | --------------------------- |
 | Stümke, Daniel              | daniel.stuemke@tum.de       |
 | Christoph, Alexander        | alexander.christoph@tum.de  |
 | Kiechle, Johannes           | johannes.kiechle@tum.de     |
-| Gottwald, Martin (Dozent)   | martin.gottwald@tum.de      |
-| Hein, Alice (Dozentin)      | alice.hein@tum.de           |
-
----
-
-## Anhang
-
-<a href="https://www.open-mpi.org/" target="_blank">`OpenMPI`</a> Versionen auf den Eikon Rechnern
-
-| HPC Rechner          | OpenMPI Version        |
-| -------------------- | ---------------------- |
-| `hpc01`              | `2.2.1`                |
-| `hpc02`              | `2.2.1`                |
-| `hpc03`              | `2.2.1`                |
-| `hpc04`              | `nicht erreichbar`     |
-| `hpc05`              | `2.2.1`                |
-| `hpc06`              | `2.2.1`                |
-| `hpc07`              | `2.2.1`                |
-| `hpc08`              | `2.2.1`                |
-| `hpc09`              | `2.2.1`                |
-| `hpc10`              | `2.2.1`                |
-| `hpc11`              | `2.2.1`                |
-| `hpc12`              | `2.2.1`                |
-| `hpc13`              | `2.2.1`                |
-| `hpc14`              | `nicht erreichbar`     |
-| `hpc15`              | `2.2.1`                |
+| Gottwald, Martin (Lecturer) | martin.gottwald@tum.de      |
+| Hein, Alice (Lecturer)      | alice.hein@tum.de           |
